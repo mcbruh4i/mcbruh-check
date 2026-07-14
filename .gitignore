@@ -1,0 +1,16 @@
+﻿# secrets & local config
+config.php
+
+# database / personal data
+storage/
+*.sqlite
+*.sqlite3
+*.db
+
+# logs & junk
+*.log
+error_log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
