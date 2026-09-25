@@ -11,12 +11,12 @@
   onScroll();
 
   /* =========================================================
-   * HERO — wavy titanium strips, deep blue blooms around the pointer
+   * HERO — wavy titanium strips, deep blue floods the strip from the pointer
    * ========================================================= */
   (function hero() {
     /* Hero is split into wavy diagonal titanium strips (like the reference sketch),
-     * on the light "day" theme. Deep blue blooms locally around the pointer/finger,
-     * deepens continuously while it stays, then slowly fades back to titanium. */
+     * on the light "day" theme. Deep blue spreads from the pointer/finger through the whole strip,
+     * then slowly fades back to titanium. */
     const section = $('.hero');
     const canvas = $('#hero-canvas');
     const ctx = canvas.getContext('2d');
@@ -93,24 +93,27 @@
     }
 
     let last = performance.now();
-    // Local "ink" spots: blue grows around the pointer and fades slowly.
-    const spots = [];
-    const MAX_SPOTS = 220;
-    let lastSpot = null;
-    const R = () => (W < 560 ? 70 : 120);
+    // Flood model: blue starts exactly where the pointer enters a strip
+    // and spreads up & down until it fills the whole strip, then slowly fades.
+    const flood = [];                       // per strip: { oy, reach, a }
+    const SPREAD = () => H * 1.9;           // px per second (whole strip in ~0.5s)
+    const EDGE = () => (W < 560 ? 60 : 90); // soft front of the spreading blue
 
     function feed(dt, t) {
-      if (!pointer.active) { lastSpot = null; return; }
-      const strip = stripAt(pointer.x, pointer.y, t);
-      if (strip < 0) return;
-      const d = lastSpot ? Math.hypot(pointer.x - lastSpot.x, pointer.y - lastSpot.y) : Infinity;
-      if (d > R() * 0.28 || !lastSpot || lastSpot.strip !== strip) {
-        lastSpot = { x: pointer.x, y: pointer.y, strip, v: 0.3 };
-        spots.push(lastSpot);
-        if (spots.length > MAX_SPOTS) spots.shift();
+      const hit = pointer.active ? stripAt(pointer.x, pointer.y, t) : -1;
+      for (let i = 0; i < pts.length - 1; i++) {
+        const f = flood[i] || (flood[i] = { oy: 0, reach: 0, a: 0 });
+        if (i === hit) {
+          if (f.a < 0.08) { f.oy = pointer.y; f.reach = 0; }   // new origin = pointer
+          f.a = Math.min(1, f.a + dt * 5);
+          f.hold = 0.35;                                       // short hold after leaving
+        } else if (f.hold > 0) {
+          f.hold -= dt;
+        } else {
+          f.a = Math.max(0, f.a - dt * 0.35);                  // slow return to titanium
+        }
+        if (f.a > 0) f.reach = Math.min(H * 1.3, f.reach + dt * SPREAD());
       }
-      // the spot under the pointer keeps getting deeper while you stay
-      lastSpot.v = Math.min(1, lastSpot.v + dt * 1.1);
     }
 
     function frame(now) {
@@ -122,13 +125,7 @@
 
       if (pointer.active && pointer.touch && now - pointer.lastMove > 900) pointer.active = false;
       feed(dt, t);
-      for (let k = spots.length - 1; k >= 0; k--) {
-        const s = spots[k];
-        if (s !== lastSpot || !pointer.active) s.v -= dt * 0.22;   // slow return
-        if (s.v <= 0) spots.splice(k, 1);
-      }
 
-      const rad = R();
       for (let i = 0; i < pts.length - 1; i++) {
         ctx.save();
         stripPath(i);
@@ -154,18 +151,29 @@
         ctx.fillStyle = sh;
         ctx.fillRect(0, 0, W, H);
 
-        // deep blue blooming around the pointer, only inside this strip
-        for (const s of spots) {
-          if (s.strip !== i) continue;
-          const e = Math.min(1, s.v * 1.15);
-          const r = rad * (0.7 + 0.55 * e);
-          const bg = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, r);
-          bg.addColorStop(0, `rgba(6,26,120,${0.82 * e})`);
-          bg.addColorStop(0.35, `rgba(12,48,175,${0.55 * e})`);
-          bg.addColorStop(0.7, `rgba(30,84,225,${0.18 * e})`);
-          bg.addColorStop(1, 'rgba(37,99,235,0)');
+        // deep blue spreading from the pointer's entry point through the strip
+        const f = flood[i];
+        if (f && f.a > 0.002) {
+          const e = f.a * f.a * (3 - 2 * f.a);
+          const edge = EDGE();
+          const top = f.oy - f.reach, bot = f.oy + f.reach;
+          const y0 = top - edge, y1 = bot + edge;
+          const span = y1 - y0;
+          const bg = ctx.createLinearGradient(0, y0, 0, y1);
+          const s0 = edge / span, s1 = 1 - edge / span;
+          const core = clamp((f.oy - y0) / span, s0, s1);
+          bg.addColorStop(0, 'rgba(12,48,175,0)');
+          bg.addColorStop(s0, `rgba(12,44,165,${0.86 * e})`);
+          bg.addColorStop(core, `rgba(5,22,105,${0.95 * e})`);
+          bg.addColorStop(s1, `rgba(12,44,165,${0.86 * e})`);
+          bg.addColorStop(1, 'rgba(12,48,175,0)');
           ctx.fillStyle = bg;
-          ctx.fillRect(s.x - r, s.y - r, r * 2, r * 2);
+          ctx.fillRect(0, Math.max(0, y0), W, Math.min(H, y1) - Math.max(0, y0));
+          // keep a bit of metallic sheen visible on top of the blue
+          ctx.fillStyle = sh;
+          ctx.globalAlpha = 0.28 * e;
+          ctx.fillRect(0, 0, W, H);
+          ctx.globalAlpha = 1;
         }
         ctx.restore();
       }
