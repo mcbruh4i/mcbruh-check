@@ -2,6 +2,9 @@
 
 Personal portfolio of Aliakbar Asadinia (@mcbruh4i). Static HTML/CSS/JS, no build step.
 
+## Live
+https://mcbruh4i.github.io/mcbruh-check/ (GitHub Pages, branch `main`, root)
+
 ## Features
 - **Theme**: light "day" palette (ui-ux-pro-max Portfolio palette: monochrome + blue accent, WCAG AA text contrast).
 - **Hero**: light "day" theme. The section is split into wavy diagonal titanium strips (bottom-to-top gradient, from the hand-drawn reference). Deep blue starts exactly where the mouse/finger enters a strip and quickly spreads up and down through that whole strip, then slowly fades back to titanium.
