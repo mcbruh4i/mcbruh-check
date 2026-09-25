@@ -11,13 +11,12 @@
   onScroll();
 
   /* =========================================================
-   * HERO — wavy titanium strips that fill with deep blue
+   * HERO — wavy titanium strips, deep blue blooms around the pointer
    * ========================================================= */
   (function hero() {
-    /* Hero is split into wavy diagonal strips (like the reference sketch).
-     * Resting state = the site's default dark background with faint seams.
-     * Pointer/finger over a strip -> it fills with titanium (bottom->top gradient),
-     * then a deep blue rises inside it, and everything slowly fades back. */
+    /* Hero is split into wavy diagonal titanium strips (like the reference sketch),
+     * on the light "day" theme. Deep blue blooms locally around the pointer/finger,
+     * deepens continuously while it stays, then slowly fades back to titanium. */
     const section = $('.hero');
     const canvas = $('#hero-canvas');
     const ctx = canvas.getContext('2d');
@@ -94,6 +93,26 @@
     }
 
     let last = performance.now();
+    // Local "ink" spots: blue grows around the pointer and fades slowly.
+    const spots = [];
+    const MAX_SPOTS = 220;
+    let lastSpot = null;
+    const R = () => (W < 560 ? 70 : 120);
+
+    function feed(dt, t) {
+      if (!pointer.active) { lastSpot = null; return; }
+      const strip = stripAt(pointer.x, pointer.y, t);
+      if (strip < 0) return;
+      const d = lastSpot ? Math.hypot(pointer.x - lastSpot.x, pointer.y - lastSpot.y) : Infinity;
+      if (d > R() * 0.28 || !lastSpot || lastSpot.strip !== strip) {
+        lastSpot = { x: pointer.x, y: pointer.y, strip, v: 0.3 };
+        spots.push(lastSpot);
+        if (spots.length > MAX_SPOTS) spots.shift();
+      }
+      // the spot under the pointer keeps getting deeper while you stay
+      lastSpot.v = Math.min(1, lastSpot.v + dt * 1.1);
+    }
+
     function frame(now) {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
@@ -102,65 +121,70 @@
       ctx.clearRect(0, 0, W, H);
 
       if (pointer.active && pointer.touch && now - pointer.lastMove > 900) pointer.active = false;
-      const hit = pointer.active ? stripAt(pointer.x, pointer.y, t) : -1;
+      feed(dt, t);
+      for (let k = spots.length - 1; k >= 0; k--) {
+        const s = spots[k];
+        if (s !== lastSpot || !pointer.active) s.v -= dt * 0.22;   // slow return
+        if (s.v <= 0) spots.splice(k, 1);
+      }
 
-      for (let i = 0; i < heat.length; i++) {
-        // continuous rise while the pointer stays over the strip, slow return afterwards
-        if (i === hit) heat[i] = Math.min(1, heat[i] + dt * 0.75);
-        else heat[i] = Math.max(0, heat[i] - dt * 0.16);
-        const h = heat[i];
-        if (h <= 0.001) continue;
-
-        const ti = smooth(0, 0.35, h);    // stage 1: titanium appears
-        const bl = smooth(0.25, 1, h);    // stage 2: deep blue grows inside it
-
+      const rad = R();
+      for (let i = 0; i < pts.length - 1; i++) {
         ctx.save();
         stripPath(i);
         ctx.clip();
 
-        // titanium — bottom to top gradient
+        // titanium panel — bottom → top gradient, each strip a slightly different tone
+        const tone = (i % 3) * 7 - 7;
         const g = ctx.createLinearGradient(0, H, 0, 0);
-        g.addColorStop(0, `rgba(38,43,50,${ti})`);
-        g.addColorStop(0.45, `rgba(118,126,136,${ti})`);
-        g.addColorStop(0.8, `rgba(186,193,201,${ti})`);
-        g.addColorStop(1, `rgba(226,230,234,${ti})`);
+        g.addColorStop(0, `rgb(${150 + tone},${157 + tone},${166 + tone})`);
+        g.addColorStop(0.5, `rgb(${196 + tone},${201 + tone},${207 + tone})`);
+        g.addColorStop(1, `rgb(${236 + tone / 2},${238 + tone / 2},${241 + tone / 2})`);
         ctx.fillStyle = g;
         ctx.fillRect(0, 0, W, H);
 
-        // brushed-metal streaks along the strip direction
+        // brushed sheen near the strip's left edge
         const mid = Math.floor(pts[i].length / 4) * 2;
-        const cx = (pts[i][mid] + pts[i + 1][mid]) / 2;
-        const sheen = ctx.createLinearGradient(cx - W / 12, 0, cx + W / 12, 0);
-        sheen.addColorStop(0, 'rgba(0,0,0,0)');
-        sheen.addColorStop(0.45, `rgba(255,255,255,${0.16 * ti})`);
-        sheen.addColorStop(1, 'rgba(0,0,0,0)');
-        ctx.fillStyle = sheen;
+        const x1 = pts[i][mid], x2 = pts[i + 1][mid];
+        const sh = ctx.createLinearGradient(x1, 0, x2, 0);
+        sh.addColorStop(0, 'rgba(255,255,255,.55)');
+        sh.addColorStop(0.25, 'rgba(255,255,255,.12)');
+        sh.addColorStop(0.7, 'rgba(0,0,0,0)');
+        sh.addColorStop(1, 'rgba(40,48,60,.12)');
+        ctx.fillStyle = sh;
         ctx.fillRect(0, 0, W, H);
 
-        // deep blue rising from the bottom
-        if (bl > 0.001) {
-          const front = H - H * (0.15 + bl * 1.05);   // top edge of the blue
-          const b = ctx.createLinearGradient(0, H, 0, front);
-          b.addColorStop(0, `rgba(4,14,58,${0.96 * bl})`);
-          b.addColorStop(0.55, `rgba(10,38,140,${0.9 * bl})`);
-          b.addColorStop(0.85, `rgba(24,70,215,${0.55 * bl})`);
-          b.addColorStop(1, 'rgba(24,70,215,0)');
-          ctx.fillStyle = b;
-          ctx.fillRect(0, 0, W, H);
+        // deep blue blooming around the pointer, only inside this strip
+        for (const s of spots) {
+          if (s.strip !== i) continue;
+          const e = Math.min(1, s.v * 1.15);
+          const r = rad * (0.7 + 0.55 * e);
+          const bg = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, r);
+          bg.addColorStop(0, `rgba(6,26,120,${0.82 * e})`);
+          bg.addColorStop(0.35, `rgba(12,48,175,${0.55 * e})`);
+          bg.addColorStop(0.7, `rgba(30,84,225,${0.18 * e})`);
+          bg.addColorStop(1, 'rgba(37,99,235,0)');
+          ctx.fillStyle = bg;
+          ctx.fillRect(s.x - r, s.y - r, r * 2, r * 2);
         }
         ctx.restore();
       }
 
-      // seams — always visible faintly, brighter next to lit strips
-      ctx.lineWidth = 1.2;
+      // seams: a crisp dark groove + light bevel, like cut metal
       for (let i = 0; i < pts.length; i++) {
-        const lit = Math.max(heat[i - 1] || 0, heat[i] || 0);
         const a = pts[i];
-        ctx.strokeStyle = `rgba(${Math.round(200 - lit * 60)},${Math.round(208 - lit * 30)},${Math.round(220 + lit * 35)},${0.1 + lit * 0.35})`;
         ctx.beginPath();
         ctx.moveTo(a[0], a[1]);
         for (let k = 2; k < a.length; k += 2) ctx.lineTo(a[k], a[k + 1]);
+        ctx.strokeStyle = 'rgba(55,63,74,.55)';
+        ctx.lineWidth = 1.4;
         ctx.stroke();
+        ctx.save();
+        ctx.translate(1.4, 0);
+        ctx.strokeStyle = 'rgba(255,255,255,.8)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.restore();
       }
 
       if (visible) requestAnimationFrame(frame);
