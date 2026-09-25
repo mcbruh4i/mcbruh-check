@@ -112,12 +112,12 @@
         } else {
           f.a = Math.max(0, f.a - dt * 0.35);                  // slow return to titanium
         }
-        if (f.a > 0) f.reach = Math.min(H * 1.3, f.reach + dt * SPREAD());
+        if (f.a > 0) f.reach = clamp(f.reach + dt * SPREAD(), 0, H * 1.3);
       }
     }
 
     function frame(now) {
-      const dt = Math.min(0.05, (now - last) / 1000);
+      const dt = clamp((now - last) / 1000, 0, 0.05);
       last = now;
       const t = now / 1000;
       sample(t);
@@ -160,7 +160,7 @@
           const y0 = top - edge, y1 = bot + edge;
           const span = y1 - y0;
           const bg = ctx.createLinearGradient(0, y0, 0, y1);
-          const s0 = edge / span, s1 = 1 - edge / span;
+          const s0 = clamp(edge / span, 0, 0.5), s1 = 1 - s0;
           const core = clamp((f.oy - y0) / span, s0, s1);
           bg.addColorStop(0, 'rgba(12,48,175,0)');
           bg.addColorStop(s0, `rgba(12,44,165,${0.86 * e})`);
