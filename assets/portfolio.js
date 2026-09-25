@@ -11,21 +11,32 @@
   onScroll();
 
   /* =========================================================
-   * HERO — titanium arched columns that heat up to deep blue
+   * HERO — wavy titanium strips that fill with deep blue
    * ========================================================= */
   (function hero() {
+    /* Hero is split into wavy diagonal strips (like the reference sketch).
+     * Resting state = the site's default dark background with faint seams.
+     * Pointer/finger over a strip -> it fills with titanium (bottom->top gradient),
+     * then a deep blue rises inside it, and everything slowly fades back. */
     const section = $('.hero');
     const canvas = $('#hero-canvas');
     const ctx = canvas.getContext('2d');
-    let W = 0, H = 0, dpr = 1, cols = [];
-    const pointer = { x: -9999, y: -9999, active: false, lastMove: 0 };
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let W = 0, H = 0, dpr = 1, lines = [], heat = [], pts = [];
+    const pointer = { x: -9999, y: -9999, active: false, touch: false, lastMove: 0 };
+    const STEP_Y = 6;
 
-    // color stops (bottom -> top) for titanium and deep blue
-    const TI = [[16, 18, 22], [58, 64, 72], [128, 136, 146], [196, 202, 208], [236, 239, 242]];
-    const BL = [[2, 6, 30], [6, 26, 110], [18, 62, 220], [60, 120, 255], [150, 190, 255]];
-    const STOPS = [0, 0.35, 0.68, 0.9, 1];
-    const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
-    const rgb = (c, a = 1) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+    const smooth = (a, b, v) => { const t = clamp((v - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+
+    // one seam line: x as a function of height (u = 0 bottom, 1 top)
+    function seamX(L, u, t) {
+      const drift = reduce ? 0 : Math.sin(t * 0.25 + L.p1) * 3;
+      return L.x0 + L.slant * u
+        + L.a1 * Math.sin(u * Math.PI * 2 * L.f1 + L.p1)
+        + L.a2 * Math.sin(u * Math.PI * 2 * L.f2 + L.p2)
+        + drift * Math.sin(u * Math.PI);
+    }
 
     function build() {
       dpr = Math.min(devicePixelRatio || 1, 2);
@@ -35,155 +46,151 @@
       canvas.height = Math.round(H * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      const target = W < 560 ? 44 : W < 1000 ? 56 : 68; // column width target
-      const n = Math.max(7, Math.round(W / target));
-      const gap = W < 560 ? 4 : 6;
-      const cw = (W - gap * (n + 1)) / n;
-      const old = cols;
-      cols = [];
-      for (let i = 0; i < n; i++) {
-        const t = i / (n - 1);
-        // heights sweep up to the right and form a gentle arch overall
-        const arch = Math.sin(Math.PI * (0.18 + t * 0.82));
-        const base = W < 860 ? 0.42 : 0.34;
-        const h = H * (base + 0.5 * (0.35 + 0.65 * t) * (0.55 + 0.45 * arch));
-        cols.push({
-          x: gap + i * (cw + gap),
-          w: cw,
-          h: Math.min(H - 40, h),
-          heat: old[i] ? old[i].heat : 0,
-          phase: Math.random() * Math.PI * 2
+      const n = W < 560 ? 6 : W < 1000 ? 8 : 10;       // visible strips
+      const spacing = W / n;
+      const slant = Math.min(spacing * 1.35, H * 0.3); // lean to the right going up
+      const old = heat;
+      lines = []; heat = [];
+      // extra seams on both sides so the whole area is covered
+      for (let i = -3; i <= n + 1; i++) {
+        let s = i * 9301 + 49297; const rnd = () => ((s = (s * 9301 + 49297) % 233280) / 233280);
+        lines.push({
+          x0: i * spacing + (rnd() - 0.5) * spacing * 0.15,
+          slant,
+          a1: spacing * (0.16 + rnd() * 0.08), f1: 1.25 + rnd() * 0.35, p1: rnd() * Math.PI * 2,
+          a2: spacing * 0.05, f2: 3 + rnd(), p2: rnd() * Math.PI * 2
         });
       }
+      for (let i = 0; i < lines.length - 1; i++) heat.push(old[i] || 0);
+      pts = lines.map(() => []);
     }
 
-    function columnPath(c, top) {
-      const r = c.w / 2;
+    function sample(t) {
+      const rows = Math.ceil(H / STEP_Y);
+      lines.forEach((L, i) => {
+        const arr = pts[i]; arr.length = 0;
+        for (let k = 0; k <= rows; k++) {
+          const y = H - k * STEP_Y;
+          arr.push(seamX(L, 1 - y / H, t), Math.max(0, y));
+        }
+      });
+    }
+
+    function stripPath(i) {
+      const a = pts[i], b = pts[i + 1];
       ctx.beginPath();
-      ctx.moveTo(c.x, H);
-      ctx.lineTo(c.x, top + r);
-      ctx.arc(c.x + r, top + r, r, Math.PI, 0, false);
-      ctx.lineTo(c.x + c.w, H);
+      ctx.moveTo(a[0], a[1]);
+      for (let k = 2; k < a.length; k += 2) ctx.lineTo(a[k], a[k + 1]);
+      for (let k = b.length - 2; k >= 0; k -= 2) ctx.lineTo(b[k], b[k + 1]);
       ctx.closePath();
+    }
+
+    function stripAt(px, py, t) {
+      const u = 1 - py / H;
+      for (let i = 0; i < lines.length - 1; i++) {
+        if (px >= seamX(lines[i], u, t) && px < seamX(lines[i + 1], u, t)) return i;
+      }
+      return -1;
     }
 
     let last = performance.now();
     function frame(now) {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
+      const t = now / 1000;
+      sample(t);
       ctx.clearRect(0, 0, W, H);
 
-      // backdrop glow following average heat
-      let avgHeat = 0;
-      cols.forEach(c => (avgHeat += c.heat));
-      avgHeat /= cols.length || 1;
+      if (pointer.active && pointer.touch && now - pointer.lastMove > 900) pointer.active = false;
+      const hit = pointer.active ? stripAt(pointer.x, pointer.y, t) : -1;
 
-      const t = now / 1000;
-      for (const c of cols) {
-        // ---- heat update (continuous rise while pointer passes, slow return) ----
-        const cx = c.x + c.w / 2;
-        const top = H - c.h;
-        let influence = 0;
-        if (pointer.active) {
-          const dx = Math.abs(pointer.x - cx) / (c.w * 1.1);
-          const overY = pointer.y > top - c.w * 0.6 ? 1 : 0.35;
-          influence = Math.max(0, 1 - dx * dx) * overY;
-        }
-        if (influence > 0) {
-          c.heat = Math.min(1, c.heat + influence * dt * 2.4); // ramps up continuously
-        } else {
-          c.heat = Math.max(0, c.heat - dt * 0.28); // slowly drifts back
-        }
-        const e = c.heat * c.heat * (3 - 2 * c.heat); // smoothstep for nicer color curve
+      for (let i = 0; i < heat.length; i++) {
+        // continuous rise while the pointer stays over the strip, slow return afterwards
+        if (i === hit) heat[i] = Math.min(1, heat[i] + dt * 0.75);
+        else heat[i] = Math.max(0, heat[i] - dt * 0.16);
+        const h = heat[i];
+        if (h <= 0.001) continue;
 
-        // ---- vertical gradient: bottom -> top ----
-        const breathe = Math.sin(t * 0.6 + c.phase) * 4;
-        const colTop = top + breathe;
-        const g = ctx.createLinearGradient(0, H, 0, colTop);
-        STOPS.forEach((s, i) => g.addColorStop(s, rgb(mix(TI[i], BL[i], e))));
-        columnPath(c, colTop);
-        ctx.fillStyle = g;
-        if (e > 0.02) {
-          ctx.shadowColor = `rgba(47,107,255,${0.55 * e})`;
-          ctx.shadowBlur = 34 * e;
-        }
-        ctx.fill();
-        ctx.shadowBlur = 0;
-        ctx.shadowColor = 'transparent';
+        const ti = smooth(0, 0.35, h);    // stage 1: titanium appears
+        const bl = smooth(0.25, 1, h);    // stage 2: deep blue grows inside it
 
-        // ---- metallic cylinder shading (left-right) ----
         ctx.save();
-        columnPath(c, colTop);
+        stripPath(i);
         ctx.clip();
-        const s = ctx.createLinearGradient(c.x, 0, c.x + c.w, 0);
-        s.addColorStop(0, 'rgba(0,0,0,.55)');
-        s.addColorStop(0.22, 'rgba(255,255,255,.10)');
-        s.addColorStop(0.36, `rgba(255,255,255,${0.30 - e * 0.1})`);
-        s.addColorStop(0.5, 'rgba(255,255,255,.04)');
-        s.addColorStop(0.82, 'rgba(0,0,0,.28)');
-        s.addColorStop(1, 'rgba(0,0,0,.6)');
-        ctx.fillStyle = s;
-        ctx.fillRect(c.x, colTop, c.w, c.h + 10);
 
-        // soft blue light where the pointer is
-        if (e > 0.01 && pointer.active) {
-          const rg = ctx.createRadialGradient(cx, pointer.y, 0, cx, pointer.y, c.w * 2.2);
-          rg.addColorStop(0, `rgba(120,170,255,${0.35 * e * (influence > 0 ? 1 : 0.4)})`);
-          rg.addColorStop(1, 'rgba(120,170,255,0)');
-          ctx.fillStyle = rg;
-          ctx.fillRect(c.x, colTop, c.w, c.h + 10);
+        // titanium — bottom to top gradient
+        const g = ctx.createLinearGradient(0, H, 0, 0);
+        g.addColorStop(0, `rgba(38,43,50,${ti})`);
+        g.addColorStop(0.45, `rgba(118,126,136,${ti})`);
+        g.addColorStop(0.8, `rgba(186,193,201,${ti})`);
+        g.addColorStop(1, `rgba(226,230,234,${ti})`);
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, W, H);
+
+        // brushed-metal streaks along the strip direction
+        const mid = Math.floor(pts[i].length / 4) * 2;
+        const cx = (pts[i][mid] + pts[i + 1][mid]) / 2;
+        const sheen = ctx.createLinearGradient(cx - W / 12, 0, cx + W / 12, 0);
+        sheen.addColorStop(0, 'rgba(0,0,0,0)');
+        sheen.addColorStop(0.45, `rgba(255,255,255,${0.16 * ti})`);
+        sheen.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = sheen;
+        ctx.fillRect(0, 0, W, H);
+
+        // deep blue rising from the bottom
+        if (bl > 0.001) {
+          const front = H - H * (0.15 + bl * 1.05);   // top edge of the blue
+          const b = ctx.createLinearGradient(0, H, 0, front);
+          b.addColorStop(0, `rgba(4,14,58,${0.96 * bl})`);
+          b.addColorStop(0.55, `rgba(10,38,140,${0.9 * bl})`);
+          b.addColorStop(0.85, `rgba(24,70,215,${0.55 * bl})`);
+          b.addColorStop(1, 'rgba(24,70,215,0)');
+          ctx.fillStyle = b;
+          ctx.fillRect(0, 0, W, H);
         }
-        // arch rim highlight
-        ctx.strokeStyle = `rgba(255,255,255,${0.22 + e * 0.2})`;
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.arc(cx, colTop + c.w / 2, c.w / 2 - 0.5, Math.PI * 1.08, Math.PI * 1.92);
-        ctx.stroke();
         ctx.restore();
-
       }
 
-      // floor reflection line
-      const fl = ctx.createLinearGradient(0, 0, W, 0);
-      fl.addColorStop(0, 'rgba(255,255,255,0)');
-      fl.addColorStop(0.5, `rgba(${Math.round(150 - avgHeat * 90)},${Math.round(170 - avgHeat * 40)},255,.25)`);
-      fl.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.fillStyle = fl;
-      ctx.fillRect(0, H - 1, W, 1);
-
-      // on touch, pointer "lifts" shortly after the finger stops moving
-      if (pointer.active && pointer.touch && now - pointer.lastMove > 600) pointer.active = false;
+      // seams — always visible faintly, brighter next to lit strips
+      ctx.lineWidth = 1.2;
+      for (let i = 0; i < pts.length; i++) {
+        const lit = Math.max(heat[i - 1] || 0, heat[i] || 0);
+        const a = pts[i];
+        ctx.strokeStyle = `rgba(${Math.round(200 - lit * 60)},${Math.round(208 - lit * 30)},${Math.round(220 + lit * 35)},${0.1 + lit * 0.35})`;
+        ctx.beginPath();
+        ctx.moveTo(a[0], a[1]);
+        for (let k = 2; k < a.length; k += 2) ctx.lineTo(a[k], a[k + 1]);
+        ctx.stroke();
+      }
 
       if (visible) requestAnimationFrame(frame);
       else running = false;
     }
 
-    function setPointer(e) {
+    function setPointer(x, y, isTouch) {
       const r = canvas.getBoundingClientRect();
-      pointer.x = e.clientX - r.left;
-      pointer.y = e.clientY - r.top;
+      pointer.x = x - r.left;
+      pointer.y = y - r.top;
       pointer.active = true;
-      pointer.touch = e.pointerType === 'touch';
+      pointer.touch = isTouch;
       pointer.lastMove = performance.now();
     }
-    section.addEventListener('pointermove', setPointer, { passive: true });
-    section.addEventListener('pointerdown', setPointer, { passive: true });
-    // touch: keep tracking the finger even while the page scrolls
-    const touch = e => {
-      const t = e.touches[0];
-      if (t) setPointer({ clientX: t.clientX, clientY: t.clientY, pointerType: 'touch' });
-    };
-    section.addEventListener('touchstart', touch, { passive: true });
-    section.addEventListener('touchmove', touch, { passive: true });
+    section.addEventListener('pointermove', e => { if (e.pointerType !== 'touch') setPointer(e.clientX, e.clientY, false); }, { passive: true });
     section.addEventListener('pointerleave', e => { if (e.pointerType !== 'touch') pointer.active = false; });
-
+    const onTouch = e => { const t = e.touches[0]; if (t) setPointer(t.clientX, t.clientY, true); };
+    section.addEventListener('touchstart', onTouch, { passive: true });
+    section.addEventListener('touchmove', onTouch, { passive: true });
 
     let visible = true, running = false;
     const start = () => { if (!running) { running = true; last = performance.now(); requestAnimationFrame(frame); } };
     new IntersectionObserver(([en]) => { visible = en.isIntersecting; if (visible) start(); }).observe(section);
 
-    let rt;
-    addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(build, 120); });
+    let rt, lastW = 0;
+    addEventListener('resize', () => {
+      clearTimeout(rt);
+      rt = setTimeout(() => { if (Math.abs(section.clientWidth - lastW) > 1 || Math.abs(section.clientHeight - H) > 120) { lastW = section.clientWidth; build(); } }, 150);
+    });
+    lastW = section.clientWidth;
     build();
     start();
   })();

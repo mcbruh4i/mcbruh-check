@@ -3,7 +3,7 @@
 Personal portfolio of Aliakbar Asadinia (@mcbruh4i). Static HTML/CSS/JS, no build step.
 
 ## Features
-- **Hero**: a canvas row of arched titanium columns with bottom-to-top gradients. When the mouse or a finger passes over a column, it keeps turning deeper blue, then slowly fades back to titanium.
+- **Hero**: the section is split into wavy diagonal strips (hand-drawn reference). At rest it keeps the default dark background with faint seams. Hovering or touching a strip fills it with a bottom-to-top titanium gradient, then a deep blue rises inside it; it slowly fades back when the pointer leaves.
 - **Skills**: every skill is its own rigid body (Matter.js). They fall into one side under gravity, collide and stack realistically, and you can pick them up and throw them with a mouse or by touch. The "Drop again" button pours them in again.
 - About, Projects and Contact sections, responsive down to mobile.
 - `projects/northline/`: the earlier Northline Auto Cash lead-gen project (HTML/JS/PHP), linked as a demo.
