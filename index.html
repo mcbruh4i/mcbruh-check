@@ -3,212 +3,136 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="description" content="Sell your car without the runaround. Share the details and get a no-pressure cash offer.">
-  <meta name="theme-color" content="#0b1720">
-  <title>Northline Auto Cash — Get a cash offer</title>
+  <meta name="description" content="Aliakbar Asadinia (mcbruh4i) — developer building AI agents, MCP tools and web experiences.">
+  <meta name="theme-color" content="#07090c">
+  <title>Aliakbar Asadinia — Developer Portfolio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/lenis@1.3.25/dist/lenis.css">
-  <link rel="stylesheet" href="assets/styles.css">
-  <script src="https://unpkg.com/lenis@1.3.25/dist/lenis.min.js" defer></script>
-  <script src="assets/app.js" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/portfolio.css">
+  <script src="https://cdn.jsdelivr.net/npm/matter-js@0.20.0/build/matter.min.js" defer></script>
+  <script src="assets/portfolio.js" defer></script>
 </head>
 <body>
-  <div class="site-route-layer" aria-hidden="true">
-    <svg class="site-route-map" viewBox="0 0 1000 10000" preserveAspectRatio="none">
-      <defs><linearGradient id="routeGradient" x1="0" y1="0" x2="0" y2="10000" gradientUnits="userSpaceOnUse"></linearGradient></defs>
-      <path class="site-route-shadow" d="M55 120 C80.8 255.6 213.8 662.2 210 933.3 C206.2 1204.4 32 1475.6 32 1746.7 C32 2017.8 210 2288.9 210 2560 C210 2831.1 32 3102.2 32 3373.3 C32 3644.4 210 3915.6 210 4186.7 C210 4457.8 32 4728.9 32 5000 C32 5271.1 210 5542.2 210 5813.3 C210 6084.4 32 6355.6 32 6626.7 C32 6897.8 210 7168.9 210 7440 C210 7711.1 32 7982.2 32 8253.3 C32 8524.4 210 8795.6 210 9066.7 C210 9337.8 61.7 9744.5 32 9880"/>
-      <path id="site-route-path" class="site-route-path" d="M55 120 C80.8 255.6 213.8 662.2 210 933.3 C206.2 1204.4 32 1475.6 32 1746.7 C32 2017.8 210 2288.9 210 2560 C210 2831.1 32 3102.2 32 3373.3 C32 3644.4 210 3915.6 210 4186.7 C210 4457.8 32 4728.9 32 5000 C32 5271.1 210 5542.2 210 5813.3 C210 6084.4 32 6355.6 32 6626.7 C32 6897.8 210 7168.9 210 7440 C210 7711.1 32 7982.2 32 8253.3 C32 8524.4 210 8795.6 210 9066.7 C210 9337.8 61.7 9744.5 32 9880"/>
-    </svg>
-    <div class="route-car">
-      <svg viewBox="0 0 44 72"><path class="car-halo" d="M12 5h20l7 18v38c0 4-3 7-7 7H12c-4 0-7-3-7-7V23l7-18Z"/><path class="car-body" d="M14 7h16l6 17v35c0 3-2 5-5 5H13c-3 0-5-2-5-5V24l6-17Z"/><path class="car-glass" d="m15 12-4 14h22l-4-14H15Z"/><path class="car-glass" d="M12 44h20l-2 12H14l-2-12Z"/><circle cx="13" cy="32" r="3"/><circle cx="31" cy="32" r="3"/></svg>
-    </div>
-  </div>
-  <div class="scroll-progress" aria-hidden="true"><span></span></div>
-  <a class="skip" href="#quote-form">Skip to quote form</a>
-  <header class="site-header">
-    <a class="brand" href="#top" aria-label="Northline Auto Cash home">
-      <svg viewBox="0 0 42 42" aria-hidden="true"><path d="M6 27h30l-3-9a4 4 0 0 0-3.8-2.7H14.8A4 4 0 0 0 11 18L6 27Z"/><path d="M4 27h34v5a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-5Z"/><circle cx="11" cy="31" r="2.5"/><circle cx="31" cy="31" r="2.5"/></svg>
-      <span>Northline <b>Auto Cash</b></span>
-    </a>
-    <div class="header-actions"><a class="header-call" href="tel:+15550142277"><span>Questions?</span> (555) 014-2277</a><button class="header-login" type="button" data-open-auth="login">Sign in</button></div>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header" id="site-header">
+    <a class="logo" href="#top" aria-label="Home">AA<span>.</span></a>
+    <nav class="main-nav" aria-label="Main">
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#projects">Projects</a>
+      <a href="#contact">Contact</a>
+    </nav>
   </header>
 
-  <main id="top">
-    <section class="hero" aria-labelledby="hero-title">
-      <div class="motion-road" aria-hidden="true"><span></span><span></span><span></span></div>
-      <div class="hero-copy reveal">
-        <p class="eyebrow"><span></span> Local buyers. Real offers.</p>
-        <h1 id="hero-title">Your car.<br><em>Cash, without the detour.</em></h1>
-        <p class="lede">Tell us what you drive. We’ll review the details and call with a fair, no-pressure offer—usually the same day.</p>
-        <div class="trust-row" aria-label="Service benefits">
-          <span><i>✓</i> Free appraisal</span><span><i>✓</i> No obligation</span><span><i>✓</i> We come to you</span>
+  <main id="main">
+    <!-- HERO: titanium arched gradient columns -->
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <canvas class="hero-canvas" id="hero-canvas" aria-hidden="true"></canvas>
+      <div class="hero-shade" aria-hidden="true"></div>
+      <div class="hero-content">
+        <p class="hero-kicker">Developer · AI agents · MCP · Web</p>
+        <h1 id="hero-title">Aliakbar<br><span>Asadinia</span></h1>
+        <p class="hero-lede">I build tools that connect AI agents to the real world — MCP servers, agent skills and fast, tactile web interfaces.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#projects">See my work</a>
+          <a class="btn btn-ghost" href="https://github.com/mcbruh4i" target="_blank" rel="noopener">GitHub ↗</a>
         </div>
       </div>
-
-      <div class="offer-panel reveal delay" id="quote">
-        <p class="eyebrow"><span></span> Start your offer</p>
-        <h2>One account.<br><em>One clear offer.</em></h2>
-        <p>Create a secure seller profile, then tell us about the vehicle. Your progress stays attached to your account.</p>
-        <button class="primary-start" type="button" data-open-auth="register"><span>Get my cash offer</span><b>↗</b></button>
-        <button class="text-login" type="button" data-open-auth="login">Already started? <u>Sign in</u></button>
-        <div class="panel-steps" aria-label="Two step process"><div><i>1</i><span><b>Create account</b><small>Contact details</small></span></div><em></em><div><i>2</i><span><b>Vehicle details</b><small>About 60 seconds</small></span></div></div>
-      </div>
+      <p class="hero-hint" aria-hidden="true">move across the columns</p>
     </section>
 
-    <section class="make-ticker" aria-label="Vehicles we buy">
-      <p>WE BUY</p>
-      <div class="ticker-window"><div class="ticker-track" aria-hidden="true">
-        <span>DAILY DRIVERS</span><i>•</i><span>HIGH MILEAGE</span><i>•</i><span>DAMAGED</span><i>•</i><span>NON-RUNNING</span><i>•</i><span>PAID OFF</span><i>•</i><span>FINANCED</span><i>•</i>
-        <span>DAILY DRIVERS</span><i>•</i><span>HIGH MILEAGE</span><i>•</i><span>DAMAGED</span><i>•</i><span>NON-RUNNING</span><i>•</i><span>PAID OFF</span><i>•</i><span>FINANCED</span><i>•</i>
-      </div></div>
-    </section>
-
-    <section class="manifesto">
-      <div class="manifesto-copy motion-reveal">
-        <p class="eyebrow"><span></span> Sell without the theater</p>
-        <h2>No listings.<br>No strangers.<br><em>No “best price?” texts.</em></h2>
-      </div>
-      <div class="manifesto-body motion-reveal" data-delay="120">
-        <p class="big-copy">Selling a car shouldn’t become your second job. Give us the honest version—the miles, the dents, the dash lights—and we’ll give you a straight answer.</p>
-        <div class="metrics">
-          <div><strong><span data-count="60">0</span> sec</strong><p>to send the details</p></div>
-          <div><strong>24–48h</strong><p>typical pickup window</p></div>
-          <div><strong>$0</strong><p>fees or obligations</p></div>
+    <section class="about" id="about" aria-labelledby="about-title">
+      <p class="section-label">01 — About</p>
+      <div class="about-grid">
+        <h2 id="about-title">Code that talks to<br>other code — and to people.</h2>
+        <div class="about-copy">
+          <p>I'm Ali, a developer who likes the seams between systems: wiring Notion chats to agents, teaching models to discover and use tools, and shipping web front-ends that feel physical instead of flat.</p>
+          <p>Most of my work lives in TypeScript and Python, with a steady side of PHP, shell scripting and whatever the problem actually needs.</p>
+          <dl class="about-stats">
+            <div><dt>Main stack</dt><dd>TypeScript · Python</dd></div>
+            <div><dt>Focus</dt><dd>Agents & MCP</dd></div>
+            <div><dt>Handle</dt><dd>@mcbruh4i</dd></div>
+          </dl>
         </div>
       </div>
-      <div class="plate-scene motion-reveal" aria-hidden="true">
-        <div class="sun-ring"></div><div class="plate"><small>NORTHLINE</small><b>NO-HASSLE</b><small>CASH FOR CARS</small></div>
-        <div class="speed-lines"><i></i><i></i><i></i></div>
+    </section>
+
+    <!-- SKILLS: physics playground -->
+    <section class="skills" id="skills" aria-labelledby="skills-title">
+      <div class="skills-head">
+        <p class="section-label">02 — Skills</p>
+        <h2 id="skills-title">What I work with</h2>
+        <p class="skills-help">Grab any skill with your mouse or finger and throw it around.</p>
+      </div>
+      <div class="skills-box" id="skills-box">
+        <ul class="skills-list" id="skills-list">
+          <li data-size="l">TypeScript</li>
+          <li data-size="l">Python</li>
+          <li data-size="m">JavaScript</li>
+          <li data-size="m">Node.js</li>
+          <li data-size="l">MCP</li>
+          <li data-size="m">AI Agents</li>
+          <li data-size="m">LLM APIs</li>
+          <li data-size="s">PHP</li>
+          <li data-size="s">HTML5</li>
+          <li data-size="s">CSS3</li>
+          <li data-size="m">REST APIs</li>
+          <li data-size="s">SQLite</li>
+          <li data-size="s">Git</li>
+          <li data-size="s">Shell</li>
+          <li data-size="s">PowerShell</li>
+          <li data-size="m">Prompt Engineering</li>
+          <li data-size="m">UI / UX</li>
+          <li data-size="s">Notion API</li>
+        </ul>
+        <button class="skills-reset" id="skills-reset" type="button">Drop again ↺</button>
       </div>
     </section>
 
-    <section class="journey" aria-labelledby="journey-title">
-      <div class="journey-head motion-reveal">
-        <p class="eyebrow"><span></span> What happens next</p>
-        <h2 id="journey-title">A clean exit,<br><em>mile by mile.</em></h2>
-        <p>Scroll through the whole process. No fine print waiting around the bend.</p>
-      </div>
-      <div class="journey-track" aria-hidden="true"><div class="track-line"><span></span></div><div class="track-car">▰</div></div>
-      <ol class="journey-cards">
-        <li class="motion-reveal" data-step="1"><div class="number">01</div><div><p class="mini">RIGHT NOW</p><h3>Send the real details</h3><p>Year, mileage, condition, and the best way to reach you. Photos can come later if needed.</p></div></li>
-        <li class="motion-reveal" data-step="2"><div class="number">02</div><div><p class="mini">SAME DAY</p><h3>Talk to one human</h3><p>A local buyer checks the information, asks only what matters, and explains the offer.</p></div></li>
-        <li class="motion-reveal" data-step="3"><div class="number">03</div><div><p class="mini">YOUR SCHEDULE</p><h3>Choose pickup and get paid</h3><p>If the offer works, we arrange collection, verify the paperwork, and complete payment.</p></div></li>
-      </ol>
-    </section>
-
-    <section class="condition-grid" aria-labelledby="condition-title">
-      <div class="condition-title motion-reveal"><p class="eyebrow"><span></span> More yes than no</p><h2 id="condition-title">What’s in your driveway?</h2><p>Clean, complicated, or somewhere in between—we’ll look at it.</p></div>
-      <div class="condition-cards">
-        <article class="condition-card wide motion-reveal"><span>01</span><h3>Still your daily driver</h3><p>Ready for something new? Skip the listing and test-drive circus.</p><div class="mini-road"><i></i></div></article>
-        <article class="condition-card dark motion-reveal" data-delay="80"><span>02</span><h3>High miles.<br>Still moving.</h3><p>The odometer doesn’t scare us.</p><b>100K<br>200K<br>+</b></article>
-        <article class="condition-card motion-reveal" data-delay="140"><span>03</span><h3>Dents, damage, dash lights</h3><p>Describe it honestly. We’ll price the car that actually exists.</p><div class="warning">!</div></article>
-        <article class="condition-card wide amber motion-reveal"><span>04</span><h3>Doesn’t run?</h3><p>No tow truck to arrange. Tell us where it sits and we’ll discuss collection.</p><div class="tow-line">PICKUP INCLUDED <i>→</i></div></article>
-      </div>
-    </section>
-
-    <section class="voices" aria-labelledby="voices-title">
-      <div class="voices-heading motion-reveal"><p class="eyebrow"><span></span> Notes from sellers</p><h2 id="voices-title">Less sales pitch.<br>More plain English.</h2></div>
-      <div class="quote-rail">
-        <blockquote class="motion-reveal"><div class="stars">★★★★★</div><p>“I expected five calls and a lowball. I got one clear conversation and they picked up the car the next afternoon.”</p><footer><b>M. Carter</b><span>2014 Ford Escape</span></footer></blockquote>
-        <blockquote class="motion-reveal" data-delay="100"><div class="stars">★★★★★</div><p>“Mine had 186,000 miles and a check-engine light. Nobody made it awkward—they just asked the right questions.”</p><footer><b>R. Singh</b><span>2011 Toyota Camry</span></footer></blockquote>
-        <blockquote class="motion-reveal" data-delay="180"><div class="stars">★★★★★</div><p>“The amount matched what we discussed. No last-minute game in the driveway.”</p><footer><b>A. Brooks</b><span>2017 Nissan Rogue</span></footer></blockquote>
-      </div>
-      <p class="testimonial-note">Sample layout copy—replace with verified customer reviews before launch.</p>
-    </section>
-
-    <section class="faq" aria-labelledby="faq-title">
-      <div class="faq-sticky motion-reveal"><p class="eyebrow"><span></span> Good to know</p><h2 id="faq-title">Straight<br>answers.</h2><p>Still unsure? Call <a href="tel:+15550142277">(555) 014-2277</a>.</p></div>
-      <div class="faq-list">
-        <div class="faq-item motion-reveal"><button type="button" aria-expanded="false"><span><i>01</i>Is the offer really free?</span><b>+</b></button><div class="faq-answer"><div><p>Yes. There’s no appraisal fee and no obligation to accept. You decide after hearing the offer.</p></div></div></div>
-        <div class="faq-item motion-reveal"><button type="button" aria-expanded="false"><span><i>02</i>Do you buy damaged or non-running cars?</span><b>+</b></button><div class="faq-answer"><div><p>Yes. Describe the condition honestly so we can make the most accurate offer and plan the right pickup.</p></div></div></div>
-        <div class="faq-item motion-reveal"><button type="button" aria-expanded="false"><span><i>03</i>What documents will I need?</span><b>+</b></button><div class="faq-answer"><div><p>Usually a valid ID and the vehicle title. Requirements can vary by location and ownership status.</p></div></div></div>
-        <div class="faq-item motion-reveal"><button type="button" aria-expanded="false"><span><i>04</i>How fast can I get paid?</span><b>+</b></button><div class="faq-answer"><div><p>After accepting the offer, pickup and payment can often be arranged within 24–48 hours.</p></div></div></div>
-        <div class="faq-item motion-reveal"><button type="button" aria-expanded="false"><span><i>05</i>What if I still owe money on it?</span><b>+</b></button><div class="faq-answer"><div><p>Tell us about the loan when we call. In many cases a payoff can be handled as part of the transaction.</p></div></div></div>
+    <section class="projects" id="projects" aria-labelledby="projects-title">
+      <p class="section-label">03 — Projects</p>
+      <h2 id="projects-title">Selected work</h2>
+      <div class="project-grid">
+        <article class="project-card">
+          <p class="project-tag">TypeScript · MCP</p>
+          <h3>Notion AI MCP</h3>
+          <p>An MCP server that connects Notion chat to the agent you use, so conversations and pages become tools the agent can read and act on.</p>
+          <a href="https://github.com/mcbruh4i/notion-ai-mcp-v2" target="_blank" rel="noopener">View repository ↗</a>
+        </article>
+        <article class="project-card">
+          <p class="project-tag">TypeScript · Python</p>
+          <h3>Objection</h3>
+          <p>A mixed TypeScript / Python project exploring agent workflows end-to-end, from the model side to the interface.</p>
+          <a href="https://github.com/mcbruh4i/objection" target="_blank" rel="noopener">View repository ↗</a>
+        </article>
+        <article class="project-card">
+          <p class="project-tag">Agent Skill · Python</p>
+          <h3>Claude Capability Bridge</h3>
+          <p>A procedural skill that teaches custom-provider models how to discover, use, verify and recover from Claude-style tools and workflows.</p>
+          <a href="https://github.com/mcbruh4i/claude-capability-bridge-skill" target="_blank" rel="noopener">View repository ↗</a>
+        </article>
+        <article class="project-card">
+          <p class="project-tag">HTML · JS · PHP</p>
+          <h3>Northline Auto Cash</h3>
+          <p>A lead-generation site with account flow, CSRF-protected forms, SQLite storage and scroll-led motion design.</p>
+          <a href="projects/northline/index.html">Open live demo ↗</a>
+        </article>
       </div>
     </section>
 
-    <section class="final-cta">
-      <div class="cta-orbit" aria-hidden="true"><span></span><span></span></div>
-      <p class="eyebrow motion-reveal"><span></span> Ready when you are</p>
-      <h2 class="motion-reveal">One minute from<br><em>one less thing.</em></h2>
-      <p class="motion-reveal">Start with the details. We’ll take it from there.</p>
-      <a class="cta-button motion-reveal" href="#quote">Tell us about your car <span>↗</span></a>
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <p class="section-label">04 — Contact</p>
+      <h2 id="contact-title">Let's build something.</h2>
+      <p>The fastest way to reach me is on GitHub.</p>
+      <a class="btn btn-primary" href="https://github.com/mcbruh4i" target="_blank" rel="noopener">github.com/mcbruh4i ↗</a>
     </section>
   </main>
 
-  <footer><a class="brand" href="#top">Northline <b>Auto Cash</b></a><p>© <span id="year-now"></span> Northline Auto Cash. All rights reserved.</p><nav><a href="#quote">Get an offer</a><a href="privacy.html">Privacy</a></nav></footer>
-
-  <div class="auth-layer" id="auth-layer" hidden>
-    <div class="auth-backdrop" data-close-auth></div>
-    <section class="auth-dialog" role="dialog" aria-modal="true" aria-labelledby="auth-title" data-lenis-prevent>
-      <button class="auth-close" type="button" data-close-auth aria-label="Close">×</button>
-      <div class="auth-progress" aria-label="Offer progress"><span class="active"><i>1</i>Account</span><b></b><span><i>2</i>Vehicle</span></div>
-
-      <div class="auth-step active" data-auth-step="account">
-        <p class="eyebrow"><span></span> Secure seller profile</p>
-        <h2 id="auth-title">Let’s start with you.</h2>
-        <p class="step-lede">Create an account so your vehicle request and our offer stay in one place.</p>
-        <div class="auth-tabs" role="tablist"><button class="active" type="button" data-auth-mode="register" role="tab">Create account</button><button type="button" data-auth-mode="login" role="tab">Sign in</button></div>
-        <form id="register-form" class="auth-form" novalidate>
-          <input type="hidden" name="csrf_token" class="csrf-field">
-          <input type="hidden" name="action" value="register">
-          <div class="trap" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
-          <div class="auth-substep active" data-substep="identifier">
-            <label>Email<input name="email" type="email" autocomplete="email" required maxlength="120" placeholder="you@example.com"></label>
-            <button class="auth-submit" type="button" data-continue><span>Continue</span><b>→</b></button>
-          </div>
-          <div class="auth-substep" data-substep="credentials" hidden>
-            <p class="identifier-recap"><span>Creating an account for <b class="identifier-echo"></b></span><button type="button" class="link-change" data-change-identifier>Change</button></p>
-            <label>Full name<input name="name" autocomplete="name" required maxlength="80" placeholder="Jordan Lee"></label>
-            <label>Phone<input name="phone" type="tel" autocomplete="tel" required maxlength="25" placeholder="(555) 123-4567"></label>
-            <label>Password<div class="password-wrap"><input name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="128" placeholder="At least 8 characters"><button type="button" data-toggle-password aria-label="Show password">Show</button></div></label>
-            <label class="consent"><input type="checkbox" name="consent" value="yes" required><span>I agree to be contacted about my vehicle offer and accept the privacy policy.</span></label>
-            <button class="auth-submit" type="submit"><span>Create account & continue</span><b>→</b></button>
-          </div>
-          <p class="auth-status" role="status" aria-live="polite"></p>
-        </form>
-        <form id="login-form" class="auth-form" hidden novalidate>
-          <input type="hidden" name="csrf_token" class="csrf-field">
-          <input type="hidden" name="action" value="login">
-          <div class="auth-substep active" data-substep="identifier">
-            <label>Email or mobile number<input name="identifier" type="text" inputmode="email" autocomplete="username" required maxlength="120" placeholder="you@example.com or (555) 123-4567"></label>
-            <button class="auth-submit" type="button" data-continue><span>Continue</span><b>→</b></button>
-          </div>
-          <div class="auth-substep" data-substep="credentials" hidden>
-            <p class="identifier-recap"><span>Signing in as <b class="identifier-echo"></b></span><button type="button" class="link-change" data-change-identifier>Change</button></p>
-            <label>Password<div class="password-wrap"><input name="password" type="password" autocomplete="current-password" required placeholder="Your password"><button type="button" data-toggle-password aria-label="Show password">Show</button></div></label>
-            <button class="auth-submit" type="submit"><span>Sign in & continue</span><b>→</b></button>
-          </div>
-          <p class="auth-status" role="status" aria-live="polite"></p>
-        </form>
-        <p class="secure-note">Protected with encrypted passwords and secure sessions.</p>
-      </div>
-
-      <div class="auth-step" data-auth-step="vehicle" hidden>
-        <p class="eyebrow"><span></span> Step 2 of 2</p>
-        <h2>Now, the car.</h2>
-        <p class="step-lede">The honest details help us make a useful offer—not a bait number.</p>
-        <form id="quote-form" action="submit.php" method="post" novalidate>
-          <input type="hidden" name="csrf_token" class="csrf-field">
-          <div class="trap" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
-          <div class="field-grid">
-            <label class="field field-wide">Make & model<input name="vehicle" required maxlength="100" placeholder="e.g. Honda Accord" aria-describedby="vehicle-error"><small id="vehicle-error" class="error"></small></label>
-            <label class="field">Year<input name="year" required inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="2018" aria-describedby="year-error"><small id="year-error" class="error"></small></label>
-            <label class="field">Mileage<div class="input-suffix"><input name="mileage" required inputmode="numeric" maxlength="7" placeholder="72,000" aria-describedby="mileage-error"><span>mi</span></div><small id="mileage-error" class="error"></small></label>
-            <label class="field field-wide">Condition<textarea name="condition" required minlength="10" maxlength="1000" rows="3" placeholder="Running condition, damage, warning lights, title status…" aria-describedby="condition-error"></textarea><small id="condition-error" class="error"></small></label>
-          </div>
-          <button class="auth-submit" type="submit"><span>Send vehicle & request offer</span><b>→</b></button>
-          <p class="auth-status" role="status" aria-live="polite"></p>
-        </form>
-        <button class="auth-logout" type="button" data-logout>Not you? Sign out</button>
-      </div>
-
-      <div class="auth-step success-step" data-auth-step="success" hidden>
-        <div class="success-mark">✓</div><p class="eyebrow">Request received</p><h2>You’re on the list.</h2><p>We saved your vehicle and account details. A buyer will review everything and contact you with the next step.</p><button class="auth-submit" type="button" data-close-auth><span>Back to the website</span><b>→</b></button>
-      </div>
-    </section>
-  </div>
+  <footer class="site-footer">
+    <p>© <span id="year"></span> Aliakbar Asadinia</p>
+    <a href="#top">Back to top ↑</a>
+  </footer>
 </body>
 </html>
